@@ -154,9 +154,7 @@ else
         # Utilisation de sed pour insérer après une ligne spécifique
         nagios4_cgi="/etc/apache2/conf-available/nagios4-cgi.conf"
         line_number=45
-        sed -i "${line_number}a\\
-        $(echo "$search_string" | sed 's/$/\\/')
-        " $file_to_search
+        sed -i "${line_number}a $search_string" "$file_to_search"
         echo "--------------------------------------------------------------"
         # Vous pouvez ajouter d'autres actions à effectuer si la ligne n'est pas trouvée
     fi
