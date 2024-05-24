@@ -47,14 +47,17 @@ echo "-----------------------------------------------------------"
 echo "Modification des fichiers de nagios4 pour un accès uniquement avec identifiants"
 nagios4_cgi="/etc/apache2/conf-available/nagios4-cgi.conf"
 line_number=15
-line_ajoute='AuthDigestDomain "Nagios4"
-AuthDigestProvider file
-AuthUserFile "/etc/nagios4/htdigest.users"
-AuthGroupFile "/etc/group"
-AuthName "Restricted Nagios4 Access"
-AuthType Digest
-Require valid-user'
+line_ajoute='  AuthDigestDomain "Nagios4"
+  AuthDigestProvider file
+  AuthUserFile "/etc/nagios4/htdigest.users"
+  AuthGroupFile "/etc/group"
+  AuthName "Restricted Nagios4 Access"
+  AuthType Digest
+  Require valid-user'
 # Utilisation de sed pour insérer après une ligne spécifique
 sed -i "${line_number}a\\
 $(echo "$line_ajoute" | sed 's/$/\\/')
 " $nagios4_cgi
+
+#Suppression des lignes Files et IpRequired
+sed -i '43,54d' $nagios4_cgi
