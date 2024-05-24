@@ -159,7 +159,13 @@ else
         echo "--------------------------------------------------------------"
         # Vous pouvez ajouter d'autres actions à effectuer si la ligne n'est pas trouvée
     fi
+
+    #Mise à jour de Nagios
+    echo "Reload de Nagios..."
+    sudo systemctl reload nagios4
 fi
+
+
 cd ..
 rm -rf Nagios4
 echo "Configuration terminée"
