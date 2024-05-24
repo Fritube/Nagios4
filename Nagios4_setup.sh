@@ -96,10 +96,10 @@ else
         echo "Quel nom de template voulez-vous utiliser ?"
         read template
         echo "-----------------------------------------------------------"
-        echo "Quel le nom de votre machine voulez-vous utiliser ?"
+        echo "Quel est le nom de votre machine ?"
         read host_name
         echo "-----------------------------------------------------------"
-        echo "Quel nom voulez-vous donne à votre machie sur Nagios ?"
+        echo "Quel nom voulez-vous donner à votre machie sur Nagios ?"
         read alias
         echo "-----------------------------------------------------------"
         echo "Quelle est l'adresse ip de votre machine ? (Elle doit être en LAN et avec une adresse ip fixe)"
@@ -120,7 +120,7 @@ else
 
         #Vérifie si le fichier linuxhost existe déja
         linux_host="/etc/nagios4/objects/linuxhosts.cfg"
-        if [[-f $linux_host ]]; then
+        if [[ -f $linux_host ]]; then
             CONTENT=$(cat $linux_host) #Récupére le contenu du fichier si il existe
             nouveau_texte="$CONTENT 
             
