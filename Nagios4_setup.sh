@@ -12,7 +12,7 @@ echo "Voulez-vous installer les paquets Apache2 et Nagios4 ? (Y/N)"
 read rep
 #Vérification de la demande de l'utilisateur
 if [[ "$rep" == "N" || "$rep" == "n" ]]; then
-    exit 1
+    echo "-----------------------------------------------------------"
 else
     echo "-----------------------------------------------------------"
     echo "Installation de Apache2"
@@ -145,3 +145,7 @@ else
         fi
     done
 fi
+cd ..
+rm -rf Nagios4
+echo "Configuration terminée"
+echo "----------------------------------------------------------------"
