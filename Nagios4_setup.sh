@@ -67,7 +67,7 @@ if [[ "$rep" == "N" || "$rep" == "n" ]]; then
     sed -i '43,54d' $nagios4_cgi
 
     #Création du mot de passe administrateur de nagios4
-    echo "-----------------------------------------------------------"
+    echo "----------------------------------------------------------------"
     echo "Création du mot de passe administrateur de nagios4 (Il faut s'en souvenir)"
     sudo htdigest -c /etc/nagios4/htdigest.users "Restricted Nagios4 Access" nagiosadmin
 
@@ -79,12 +79,12 @@ if [[ "$rep" == "N" || "$rep" == "n" ]]; then
     sed -i "${line_number}i$nouvelle_ligne" "$cgi_cfg"
 
     #Redémarrage des services
-    echo "-----------------------------------------------------------"
+    echo "----------------------------------------------------------------"
     echo "Redémarrage des services"
     sudo systemctl restart nagios4
     sudo systemctl restart apache2
 fi
-echo "-----------------------------------------------------------"
+echo "----------------------------------------------------------------"
 echo "Voulez-vous ajouter des hôtes Linux ? (Y/N)"
 read rep
 if [[ "$rep" == "N" || "$rep" == "n" ]]; then
@@ -107,7 +107,7 @@ else
         echo "-----------------------------------------------------------"
         echo "A quel groupe voulez-vous que votre machine fasse partie ?"
         read group
-
+        
        # Création du texte à ajouter
         texte="#Nouvel Hote $ip
         define host {
@@ -131,6 +131,28 @@ else
             nouveau_texte="$texte"
         fi
 
+        #Vérification pour savoir si le groupe a déja été config
+        search_string="cfg_file=/etc/nagios4/objects/linuxhosts.cfg"  # La chaîne de texte à rechercher
+        file_to_search="define hostgroup {
+            hostgroup_name $group
+        }"
+        group_text=""
+        # Recherche de la ligne dans le fichier
+        if grep -q "$search_string" "$file_to_search"; then
+            echo "----------------------------------------------------------------"
+        else
+            echo "-----------------------------------------------------------"
+            echo "Quel est l'Alias de votre groupe ?"
+            read alias_group
+            group_text="define hostgroup {
+                hostgroup_name $group
+                alias $alias_group
+            }"
+            nouveau_texte="$nouveau_texte
+        $group_text"
+        fi
+
+
         # Crée ou recrée le fichier avec le contenu mis à jour
         echo "$nouveau_texte" > "$linux_host"
 
@@ -149,20 +171,21 @@ else
     file_to_search="/etc/nagios4/nagios.cfg"  # Le fichier dans lequel rechercher
     # Recherche de la ligne dans le fichier
     if grep -q "$search_string" "$file_to_search"; then
-        echo "--------------------------------------------------------------"
+        echo "----------------------------------------------------------------"
         # Vous pouvez ajouter d'autres actions à effectuer si la ligne est trouvée
     else
         # Utilisation de sed pour insérer après une ligne spécifique
         nagios4_cgi="/etc/apache2/conf-available/nagios4-cgi.conf"
         line_number=45
         sed -i "${line_number}a $search_string" "$file_to_search"
-        echo "--------------------------------------------------------------"
+        echo "----------------------------------------------------------------"
         # Vous pouvez ajouter d'autres actions à effectuer si la ligne n'est pas trouvée
     fi
 
     #Mise à jour de Nagios
     echo "Reload de Nagios..."
     sudo systemctl reload nagios4
+    echo "----------------------------------------------------------------"
 fi
 
 
