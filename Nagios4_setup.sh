@@ -126,33 +126,30 @@ else
             # Combine le contenu existant avec le nouveau texte sans ajouter d'alinéas
             nouveau_texte="$CONTENT
         $texte"
+
+            #Vérification pour savoir si le groupe a déja été config
+            search_string="define hostgroup {
+                hostgroup_name $group
+            }"
+            group_text=""
+            # Recherche de la ligne dans le fichier
+            if grep -q "$search_string" "$linux_host"; then
+                echo "----------------------------------------------------------------"
+            else
+                echo "-----------------------------------------------------------"
+                echo "Quel est l'Alias de votre groupe ?"
+                read alias_group
+                group_text="define hostgroup {
+                    hostgroup_name $group
+                    alias $alias_group
+                }"
+                nouveau_texte="$nouveau_texte
+            $group_text"
+            fi
         else
             # Utilise uniquement le nouveau texte si le fichier n'existe pas
             nouveau_texte="$texte"
         fi
-
-        #Vérification pour savoir si le groupe a déja été config
-        search_string="cfg_file=/etc/nagios4/objects/linuxhosts.cfg"  # La chaîne de texte à rechercher
-        file_to_search="define hostgroup {
-            hostgroup_name $group
-        }"
-        group_text=""
-        # Recherche de la ligne dans le fichier
-        if grep -q "$search_string" "$file_to_search"; then
-            echo "----------------------------------------------------------------"
-        else
-            echo "-----------------------------------------------------------"
-            echo "Quel est l'Alias de votre groupe ?"
-            read alias_group
-            group_text="define hostgroup {
-                hostgroup_name $group
-                alias $alias_group
-            }"
-            nouveau_texte="$nouveau_texte
-        $group_text"
-        fi
-
-
         # Crée ou recrée le fichier avec le contenu mis à jour
         echo "$nouveau_texte" > "$linux_host"
 
