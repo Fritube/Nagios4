@@ -122,8 +122,7 @@ else
         linux_host="/etc/nagios4/objects/linuxhosts.cfg"
         if [[ -f $linux_host ]]; then
             CONTENT=$(cat $linux_host) #Récupére le contenu du fichier si il existe
-            nouveau_texte="$CONTENT 
-            
+            nouveau_texte="$CONTENT
             $texte"
             #On supprime l'ancien fichier
             rm $linux_host
@@ -144,6 +143,23 @@ else
             DECISION=0
         fi
     done
+    #Indiquer à Nagios d'utiliser aussi ce fichier de conf
+    search_string="cfg_file=/etc/nagios4/objects/linuxhosts.cfg"  # La chaîne de texte à rechercher
+    file_to_search="/etc/nagios4/nagios.cfg"  # Le fichier dans lequel rechercher
+    # Recherche de la ligne dans le fichier
+    if grep -q "$search_string" "$file_to_search"; then
+        echo "--------------------------------------------------------------"
+        # Vous pouvez ajouter d'autres actions à effectuer si la ligne est trouvée
+    else
+        # Utilisation de sed pour insérer après une ligne spécifique
+        nagios4_cgi="/etc/apache2/conf-available/nagios4-cgi.conf"
+        line_number=45
+        sed -i "${line_number}a\\
+        $(echo "$search_string" | sed 's/$/\\/')
+        " $file_to_search
+        echo "--------------------------------------------------------------"
+        # Vous pouvez ajouter d'autres actions à effectuer si la ligne n'est pas trouvée
+    fi
 fi
 cd ..
 rm -rf Nagios4
