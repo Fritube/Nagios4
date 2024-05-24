@@ -108,7 +108,7 @@ else
         echo "A quel groupe voulez-vous que votre machine fasse partie ?"
         read group
 
-        #Création du texte à ajouter
+       # Création du texte à ajouter
         texte="#Nouvel Hote $ip
         define host {
             use $template
@@ -118,20 +118,21 @@ else
             hostgroups $group
         }"
 
-        #Vérifie si le fichier linuxhost existe déja
+        # Vérifie si le fichier linuxhost existe déjà
         linux_host="/etc/nagios4/objects/linuxhosts.cfg"
         if [[ -f $linux_host ]]; then
-            CONTENT=$(cat $linux_host) #Récupére le contenu du fichier si il existe
+            # Récupère le contenu du fichier s'il existe
+            CONTENT=$(<"$linux_host")
+            # Combine le contenu existant avec le nouveau texte sans ajouter d'alinéas
             nouveau_texte="$CONTENT
-            $texte"
-            #On supprime l'ancien fichier
-            rm $linux_host
+        $texte"
         else
-            nouveau_texte=$texte
+            # Utilise uniquement le nouveau texte si le fichier n'existe pas
+            nouveau_texte="$texte"
         fi
 
-        #On crée le fichier
-        echo "$nouveau_texte" > $linux_host
+        # Crée ou recrée le fichier avec le contenu mis à jour
+        echo "$nouveau_texte" > "$linux_host"
 
         # Demander si l'utilisateur veut ajouter un autre hôte
         echo "----------------------------------------------------------------"
