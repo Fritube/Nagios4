@@ -105,6 +105,7 @@ group_text="
     #alias Ubuntu Host Group
 #}"
 echo "$texte $group_text" > $file
+echo "-----------------------------------------------------------"
 echo "Un exemple de configuration vous a été donné dans le fichier /etc/nagios4/objects/linuxhosts.cfg"
 cd ..
 rm -rf Nagios4
