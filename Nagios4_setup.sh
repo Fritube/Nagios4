@@ -84,107 +84,23 @@ if [[ "$rep" == "N" || "$rep" == "n" ]]; then
     sudo systemctl restart nagios4
     sudo systemctl restart apache2
 fi
-echo "----------------------------------------------------------------"
-echo "Voulez-vous ajouter des hôtes Linux ? (Y/N)"
-read rep
-if [[ "$rep" == "N" || "$rep" == "n" ]]; then
-    exit 1
-else
-    DECISION=1
-    while [ $DECISION -eq 1 ]; do
-        echo "-----------------------------------------------------------"
-        echo "Quel nom de template voulez-vous utiliser ?"
-        read template
-        echo "-----------------------------------------------------------"
-        echo "Quel est le nom de votre machine ?"
-        read host_name
-        echo "-----------------------------------------------------------"
-        echo "Quel nom voulez-vous donner à votre machie sur Nagios ?"
-        read alias
-        echo "-----------------------------------------------------------"
-        echo "Quelle est l'adresse ip de votre machine ? (Elle doit être en LAN et avec une adresse ip fixe)"
-        read ip
-        echo "-----------------------------------------------------------"
-        echo "A quel groupe voulez-vous que votre machine fasse partie ?"
-        read group
-        
-       # Création du texte à ajouter
-        texte="#Nouvel Hote $ip
-        define host {
-            use $template
-            host_name $host_name
-            alias $alias
-            address $ip
-            hostgroups $group
-        }"
 
-        # Vérifie si le fichier linuxhost existe déjà
-        linux_host="/etc/nagios4/objects/linuxhosts.cfg"
-        if [[ -f $linux_host ]]; then
-            # Récupère le contenu du fichier s'il existe
-            CONTENT=$(<"$linux_host")
-            # Combine le contenu existant avec le nouveau texte sans ajouter d'alinéas
-            nouveau_texte="$CONTENT
-        $texte"
-
-            #Vérification pour savoir si le groupe a déja été config
-            search_string="define hostgroup {
-                hostgroup_name $group
-            }"
-            group_text=""
-            # Recherche de la ligne dans le fichier
-            if grep -q "$search_string" "$linux_host"; then
-                echo "----------------------------------------------------------------"
-            else
-                echo "-----------------------------------------------------------"
-                echo "Quel est l'Alias de votre groupe ?"
-                read alias_group
-                group_text="define hostgroup {
-                    hostgroup_name $group
-                    alias $alias_group
-                }"
-                nouveau_texte="$nouveau_texte
-            $group_text"
-            fi
-        else
-            # Utilise uniquement le nouveau texte si le fichier n'existe pas
-            nouveau_texte="$texte"
-        fi
-        # Crée ou recrée le fichier avec le contenu mis à jour
-        echo "$nouveau_texte" > "$linux_host"
-
-        # Demander si l'utilisateur veut ajouter un autre hôte
-        echo "----------------------------------------------------------------"
-        echo "Avez-vous un autre hôte à ajouter ?(Y/N)"
-        read dec
-        
-        # Vérifier la réponse de l'utilisateur
-        if [[ "$dec" == "N" || "$dec" == "n" ]]; then
-            DECISION=0
-        fi
-    done
-    #Indiquer à Nagios d'utiliser aussi ce fichier de conf
-    search_string="cfg_file=/etc/nagios4/objects/linuxhosts.cfg"  # La chaîne de texte à rechercher
-    file_to_search="/etc/nagios4/nagios.cfg"  # Le fichier dans lequel rechercher
-    # Recherche de la ligne dans le fichier
-    if grep -q "$search_string" "$file_to_search"; then
-        echo "----------------------------------------------------------------"
-        # Vous pouvez ajouter d'autres actions à effectuer si la ligne est trouvée
-    else
-        # Utilisation de sed pour insérer après une ligne spécifique
-        nagios4_cgi="/etc/apache2/conf-available/nagios4-cgi.conf"
-        line_number=45
-        sed -i "${line_number}a $search_string" "$file_to_search"
-        echo "----------------------------------------------------------------"
-        # Vous pouvez ajouter d'autres actions à effectuer si la ligne n'est pas trouvée
-    fi
-
-    #Mise à jour de Nagios
-    echo "Reload de Nagios..."
-    sudo systemctl reload nagios4
-    echo "----------------------------------------------------------------"
-fi
-
+#Exemple pour LinuxHost
+string="cfg_file=/etc/nagios4/objects/linuxhosts.cfg" 
+file="/etc/nagios4/objects/linuxhosts.cfg"
+# Création du texte d'exemple à ajouter
+texte="#define host { 
+    #use linux-server
+    #host_name Ubuntu-Host
+    #alias Ubuntu-Host
+    #address 192.168.1.15
+    #hostgroups host_ubuntu
+#}"
+group_text="#define hostgroup {
+    #hostgroup_name host_ubuntu
+    #alias Ubuntu Host Group
+#}"
+echo "$texte $group_text" > $file
 
 cd ..
 rm -rf Nagios4
