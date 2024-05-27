@@ -89,19 +89,23 @@ fi
 string="cfg_file=/etc/nagios4/objects/linuxhosts.cfg" 
 file="/etc/nagios4/objects/linuxhosts.cfg"
 # Création du texte d'exemple à ajouter
-texte="#define host { 
+texte="#Exemple de configuration d'hôte et de groupe
+#define host { 
     #use linux-server
     #host_name Ubuntu-Host
     #alias Ubuntu-Host
     #address 192.168.1.15
     #hostgroups host_ubuntu
-#}"
-group_text="#define hostgroup {
+#}
+
+"
+group_text="
+#define hostgroup {
     #hostgroup_name host_ubuntu
     #alias Ubuntu Host Group
 #}"
 echo "$texte $group_text" > $file
-
+echo "Un exemple de configuration vous a été donné dans le fichier /etc/nagios4/objects/linuxhosts.cfg"
 cd ..
 rm -rf Nagios4
 echo "Configuration terminée"
