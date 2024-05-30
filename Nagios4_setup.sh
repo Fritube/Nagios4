@@ -64,7 +64,7 @@ if [[ "$rep" == "N" || "$rep" == "n" ]]; then
     " $nagios4_cgi
 
     #Suppression des lignes Files et IpRequired
-    sed -i '43,54d' $nagios4_cgi
+    sed -i '43,53d' $nagios4_cgi
 
     #Création du mot de passe administrateur de nagios4
     echo "----------------------------------------------------------------"
